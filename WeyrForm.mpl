@@ -173,9 +173,6 @@ implementation_W := proc(A::Matrix(algebraic, square), $)::Matrix;
 
     W := DiagonalMatrix(weyrBlockList);
 
-    ASSERT(IsSimilar(W, J), "W must be similar to J");
-    ASSERT(IsSimilar(W, A), "W must be similar to A");
-
     return W;
 
 end proc;
@@ -245,7 +242,6 @@ implementation_WQ := proc(A::Matrix(algebraic, square), $)
     
     W := MatrixInverse(QQ).A.QQ;
     W := map(simplify, map(normal, W));
-    ASSERT(IsSimilar(A, W), "W and A must be similar");
 
     return W, QQ;
 
@@ -510,8 +506,6 @@ sortJordanForm := proc(J::Matrix(algebraic, square), $)
 
     # 2. Order blocks in decreasing order
     J2 := MatrixInverse(Q).J.Q;
-
-    ASSERT(IsSimilar(J, J2), "J2 must be similar to J");
 
     # Get the eigenvalues (in the same order they appear in J2)
     eigVals := MakeUnique(convert(Diagonal(J2), list));
