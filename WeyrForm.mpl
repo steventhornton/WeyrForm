@@ -158,7 +158,9 @@ implementation_W := proc(A::Matrix(algebraic, square), $)::Matrix;
                W::'Matrix'(algebraic, square);
 
     # Compute Jordan form of A
+    userinfo(2, 'WeyrForm', "Computing JCF");
     J := JordanForm(A);
+    userinfo(2, 'WeyrForm', "Done computing JCF");
 
     # Get the Weyr structure
     jordanStructure := getJordanStructure(J);
@@ -193,7 +195,7 @@ end proc;
 # ----------------------------------------------------------------------- #
 implementation_WQ := proc(A::Matrix(algebraic, square), $)
 
-    local J::'Matrix'(algebraic, square), 
+    local J1::'Matrix'(algebraic, square), 
           Q1::'Matrix'(algebraic, square),
           Q2::'Matrix'(algebraic, square),
           QQ::'Matrix'(algebraic, square),
@@ -205,31 +207,31 @@ implementation_WQ := proc(A::Matrix(algebraic, square), $)
           W::'Matrix'(algebraic, square);
 
     # Compute Jordan form of A
-    Q1 := JordanForm(A, 'output' = 'Q');
-
-    J := MatrixInverse(Q1).A.Q1;
-
-    Q2 := sortJordanForm(J);
+    userinfo(2, 'WeyrForm', "Computing JCF");
+    J1, Q1 := JordanForm(A, 'output'=['J','Q']);
+    userinfo(2, 'WeyrForm', "Done computing JCF");
+    
+    Q2 := sortJordanForm(J1);
 
     # Update Q and J
     QQ := Q1.Q2;
-    J := MatrixInverse(QQ).A.QQ;
+    J1 := MatrixInverse(QQ).A.QQ;
 
     # Split J by eigenvalue
     # For each Jordan block matrix, compute the transformation to Weyr form
     blockList := [];
     startBlock := 1;
-    currentBlockEig := J[1,1];
+    currentBlockEig := J1[1,1];
     for i to RowDimension(A) do
-        if currentBlockEig <> J[i,i] then
-            blockList := [op(blockList), J[startBlock..(i-1), startBlock..(i-1)]];
-            currentBlockEig := J[i,i];
+        if currentBlockEig <> J1[i,i] then
+            blockList := [op(blockList), J1[startBlock..(i-1), startBlock..(i-1)]];
+            currentBlockEig := J1[i,i];
             startBlock := i;
             if i = RowDimension(A) then
-                blockList := [op(blockList), J[startBlock..i, startBlock..i]];
+                blockList := [op(blockList), J1[startBlock..i, startBlock..i]];
             end if;
         elif i = RowDimension(A) then
-            blockList := [op(blockList), J[startBlock..i, startBlock..i]];
+            blockList := [op(blockList), J1[startBlock..i, startBlock..i]];
         end if;
     end do;
     
@@ -269,7 +271,7 @@ getJordanStructure := proc(J::Matrix(algebraic, square), $)::table;
                  pair::[anything,posint],
       jordanStructure::table,
                  item;
-
+    
     # Case where J is a 1x1 matrix
     if RowDimension(J) = 1 then
         return table([J[1,1] = 1]);
