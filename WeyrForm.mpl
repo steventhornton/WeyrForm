@@ -173,8 +173,8 @@ implementation_W := proc(A::Matrix(algebraic, square), $)::Matrix;
 
     W := DiagonalMatrix(weyrBlockList);
 
-    #ASSERT(IsSimilar(W, J), "W must be similar to J");
-    #ASSERT(IsSimilar(W, A), "W must be similar to A");
+    ASSERT(IsSimilar(W, J), "W must be similar to J");
+    ASSERT(IsSimilar(W, A), "W must be similar to A");
 
     return W;
 
@@ -228,20 +228,23 @@ implementation_WQ := proc(A::Matrix(algebraic, square), $)
             blockList := [op(blockList), J[startBlock..(i-1), startBlock..(i-1)]];
             currentBlockEig := J[i,i];
             startBlock := i;
+            if i = RowDimension(A) then
+                blockList := [op(blockList), J[startBlock..i, startBlock..i]];
+            end if;
         elif i = RowDimension(A) then
             blockList := [op(blockList), J[startBlock..i, startBlock..i]];
         end if;
     end do;
-
+    
     permutations := map(JCF_to_WCF_Transformation_One_Eig, blockList);
-
+    
     Q1 := DiagonalMatrix(permutations);
     Q1 := MatrixInverse(Q1);
-
+    
     QQ := QQ.Q1;
-
+    
     W := MatrixInverse(QQ).A.QQ;
-
+    W := map(simplify, map(normal, W));
     ASSERT(IsSimilar(A, W), "W and A must be similar");
 
     return W, QQ;
