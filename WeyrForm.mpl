@@ -93,10 +93,11 @@ WeyrForm := module()
 processInput := proc(A::Matrix(algebraic, square), {output := 'W'}, $)
     
     # Check that the output is of the form W, Q, [W, Q] or [Q, W]
-    if evalb(output <> ['W', 'Q']) and
-       evalb(output <> ['Q', 'W']) and
-       evalb(output <> 'W') and
-       evalb(output <> 'Q') then
+    if not type(output, list(identical('W', 'Q'))) and
+       not type(output, list(identical('Q', 'W'))) and
+       not evalb(output = 'W') and
+       not evalb(output = 'Q')
+       then
         error "output expected to be one of [W, Q], [Q, W], W, or Q.";
     end if;
     
