@@ -370,23 +370,34 @@ end proc;
 #   The entries in the input list are in decreasing order.                #
 # ----------------------------------------------------------------------- #
 jordanStructureToWeyrStructure := proc(jordanStructure::list(posint), $)::list(posint);
-
-    local weyrStructure::list(posint), l::list(nonnegint); 
-
+    
+    local weyrStructure::list(nonnegint), 
+                      l::list(nonnegint),
+                      i::posint,
+                     mj::posint; 
+    
     # Copy jordanStructure so we can operate on it
     l := jordanStructure; 
-
-    # Create an empty list for the Weyr structure
-    weyrStructure := []; 
-
-    while 0 < nops(l) do 
-        weyrStructure := [op(weyrStructure), nops(l)]; 
+    
+    mj := max(jordanStructure);
+    
+    # Create a list of zeros of size max(jordanStructure)
+    weyrStructure := [0$mj]; 
+    
+    for i to mj do
+        
+        weyrStructure[i] := nops(l);
+        
+        # Subtract 1 from each element of l
         l := map(proc (a) options operator, arrow; a-1 end proc, l); 
+        
+        # Remove zeros from l
         l := remove(proc (a) options operator, arrow; evalb(a = 0) end proc, l);
-    end do; 
-
+        
+    end do;
+    
     return weyrStructure;
-
+    
 end proc;
 
 
