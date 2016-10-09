@@ -83,6 +83,10 @@ test102 := proc()
     
     for i to 10 do
         A := RandomMatrix(3);
+<<<<<<< HEAD
+=======
+        printf("\t%d of 100\n", i);
+>>>>>>> 325c59848b0a51c8f64969ff97e55a7c1734f811
         WW, QQ := WeyrForm(A, 'output'=['W', 'Q']);
         
         if not Equal(Matrix(3), map(simplify, WW - MatrixInverse(QQ).A.QQ)) then
