@@ -158,9 +158,7 @@ implementation_W := proc(A::Matrix(algebraic, square), $)::Matrix;
                W::'Matrix'(algebraic, square);
 
     # Compute Jordan form of A
-    userinfo(2, 'WeyrForm', "Computing JCF");
     J := JordanForm(A);
-    userinfo(2, 'WeyrForm', "Done computing JCF");
 
     # Get the Weyr structure
     jordanStructure := getJordanStructure(J);
@@ -207,9 +205,7 @@ implementation_WQ := proc(A::Matrix(algebraic, square), $)
           W::'Matrix'(algebraic, square);
 
     # Compute Jordan form of A
-    userinfo(2, 'WeyrForm', "Computing JCF");
     J1, Q1 := JordanForm(A, 'output'=['J','Q']);
-    userinfo(2, 'WeyrForm', "Done computing JCF");
     
     Q2 := sortJordanForm(J1);
 
@@ -416,50 +412,45 @@ end proc;
 #   blocks are identity matrices of the appropriate size.                 #
 # ----------------------------------------------------------------------- #
 weyrBlockMatrix := proc(eigVal, weyrStructure::(list(posint)), $)::Matrix(algebraic, square);
-
-    local superDiagBlockList::list('Matrix'(algebraic)),
+    
+    local superDiagBlockList::list('Matrix'(nonnegint)),
                            i::posint,
-                        nRow::posint, 
-                        nCol::posint, 
-                           W::Matrix, 
+                        nRow::posint,
+                        nCol::posint,
+                           W::Matrix,
                   matrixSize::posint,
-              identityBlocks::'Matrix'(algebraic),
+              identityBlocks::'Matrix'(nonnegint),
                startBlockCol::posint,
-                 endBlockCol::posint,
-               startBlockRow::posint,
                  endBlockRow::posint;
-
+    
     if nops(weyrStructure) = 1 then
-        return eigVal*LinearAlgebra:-IdentityMatrix(weyrStructure[1]);
+        return eigVal*IdentityMatrix(weyrStructure[1]);
     end if;
-
+    
+    # A list of the identity blocks for the super-diagonal blocks
     superDiagBlockList := [];
-
+    
     for i to nops(weyrStructure)-1 do
         nRow := weyrStructure[i];
         nCol := weyrStructure[i+1];
         
-        superDiagBlockList := [op(superDiagBlockList), LinearAlgebra:-IdentityMatrix(nRow, nCol)]
+        superDiagBlockList := [op(superDiagBlockList), IdentityMatrix(nRow, nCol)]
     end do;
-
+    
+    identityBlocks := DiagonalMatrix(superDiagBlockList);
+    
     matrixSize := add(weyrStructure);
     W := Matrix(matrixSize);
-
-    identityBlocks := LinearAlgebra:-DiagonalMatrix(superDiagBlockList);
-
+    
     startBlockCol := weyrStructure[1]+1;
-    endBlockCol := matrixSize;
-    startBlockRow := 1;
     endBlockRow := matrixSize-weyrStructure[nops(weyrStructure)];
-
-    W[startBlockRow .. endBlockRow, startBlockCol .. endBlockCol] := identityBlocks;
-
-    for i to matrixSize do
-        W[i, i] := eigVal;
-    end do; 
-
+    
+    W[1..endBlockRow, startBlockCol..matrixSize] := identityBlocks;
+    
+    W := W + eigVal*IdentityMatrix(matrixSize);
+    
     return W;
-
+    
 end proc;
 
 
