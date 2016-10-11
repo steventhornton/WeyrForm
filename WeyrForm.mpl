@@ -5,7 +5,7 @@
 #                                                                         #
 # AUTHOR .... Steven E. Thornton                                          #
 # EMAIL ..... sthornt7@uwo.ca                                             #
-# UPDATED ... Oct. 8/2016                                                 #
+# UPDATED ... Oct. 11/2016                                                #
 #                                                                         #
 # A function for computing the Weyr canonical form of a matrix            #
 #                                                                         #
@@ -117,8 +117,8 @@ end proc:
 # ----------------------------------------------------------------------- #
 implementation := proc(A::Matrix(algebraic, square), output, $)
     
-    local WW::'Matrix'(algebraic, square),
-          QQ::'Matrix'(algebraic, square);
+    local WW :: 'Matrix'(algebraic, square),
+          QQ :: 'Matrix'(algebraic, square);
     
     if evalb(output = 'W') then
         implementation_W(A);
@@ -150,12 +150,12 @@ end proc:
 # ----------------------------------------------------------------------- #
 implementation_W := proc(A::Matrix(algebraic, square), $)::Matrix;
 
-    local      J::'Matrix'(algebraic, square),
- jordanStructure::table,
-   weyrStructure::table,
-          eigVal::algebraic,
-   weyrBlockList::list('Matrix'(algebraic, square)),
-               W::'Matrix'(algebraic, square);
+    local J :: 'Matrix'(algebraic, square),
+          jordanStructure :: table,
+          weyrStructure :: table,
+          eigVal :: algebraic,
+          weyrBlockList :: list('Matrix'(algebraic, square)),
+          W :: 'Matrix'(algebraic, square);
 
     # Compute Jordan form of A
     J := JordanForm(A);
@@ -193,16 +193,16 @@ end proc;
 # ----------------------------------------------------------------------- #
 implementation_WQ := proc(A::Matrix(algebraic, square), $)
 
-    local J1::'Matrix'(algebraic, square), 
-          Q1::'Matrix'(algebraic, square),
-          Q2::'Matrix'(algebraic, square),
-          QQ::'Matrix'(algebraic, square),
+    local J1 :: 'Matrix'(algebraic, square), 
+          Q1 :: 'Matrix'(algebraic, square),
+          Q2 :: 'Matrix'(algebraic, square),
+          QQ :: 'Matrix'(algebraic, square),
           blockList, 
-        startBlock::posint, 
+          startBlock :: posint, 
           currentBlockEig, 
-          i::posint, 
-          permutations::list('Matrix'(algebraic, square)), 
-          W::'Matrix'(algebraic, square);
+          i :: posint, 
+          permutations :: list('Matrix'(algebraic, square)), 
+          W :: 'Matrix'(algebraic, square);
 
     # Compute Jordan form of A
     J1, Q1 := JordanForm(A, 'output'=['J','Q']);
@@ -263,10 +263,10 @@ end proc;
 # ----------------------------------------------------------------------- #
 getJordanStructure := proc(J::Matrix(algebraic, square), $)::table;
 
-    local eigsAndSize::list(list),
-                 pair::[anything,posint],
-      jordanStructure::table,
-                 item;
+    local eigsAndSize :: list(list),
+          pair :: [anything,posint],
+          jordanStructure :: table,
+          item;
     
     # Case where J is a 1x1 matrix
     if RowDimension(J) = 1 then
@@ -314,10 +314,10 @@ end proc;
 # ----------------------------------------------------------------------- #
 eigsAndBlockSizeFromJCF := proc(J::Matrix(algebraic, square), $)::list([anything, posint]);
 
-    local superDiagonal::list,
-          blockLocation::list(truefalse),
-             blockInter::list,
-             splitBlock::list(list);
+    local superDiagonal :: list,
+          blockLocation :: list(truefalse),
+          blockInter :: list,
+          splitBlock :: list(list);
 
     # Get a list of the values on the first super diagonal
     superDiagonal:=convert(Diagonal(J,1),list); 
@@ -367,10 +367,10 @@ end proc;
 # ----------------------------------------------------------------------- #
 jordanStructureToWeyrStructure := proc(jordanStructure::list(posint), $)::list(posint);
     
-    local weyrStructure::list(nonnegint), 
-                      l::list(nonnegint),
-                      i::posint,
-                     mj::posint; 
+    local weyrStructure :: list(nonnegint), 
+          l :: list(nonnegint),
+          i :: posint,
+          mj :: posint; 
     
     # Copy jordanStructure so we can operate on it
     l := jordanStructure; 
@@ -413,15 +413,15 @@ end proc;
 # ----------------------------------------------------------------------- #
 weyrBlockMatrix := proc(eigVal, weyrStructure::(list(posint)), $)::Matrix(algebraic, square);
     
-    local superDiagBlockList::list('Matrix'(nonnegint)),
-                           i::posint,
-                        nRow::posint,
-                        nCol::posint,
-                           W::Matrix,
-                  matrixSize::posint,
-              identityBlocks::'Matrix'(nonnegint),
-               startBlockCol::posint,
-                 endBlockRow::posint;
+    local superDiagBlockList :: list('Matrix'(nonnegint)),
+          i :: posint,
+          nRow :: posint,
+          nCol :: posint,
+          W :: Matrix,
+          matrixSize :: posint,
+          identityBlocks :: 'Matrix'(nonnegint),
+          startBlockCol :: posint,
+          endBlockRow :: posint;
     
     if nops(weyrStructure) = 1 then
         return eigVal*IdentityMatrix(weyrStructure[1]);
@@ -476,15 +476,19 @@ end proc;
 # ----------------------------------------------------------------------- #
 sortJordanForm := proc(J::Matrix(algebraic, square), $)
 
-    local n::posint,
-          Q::'Matrix'(algebraic, square),
-          Q2::'Matrix'(algebraic, square),
-    eigVals::list,
-        eig,
-          i::posint,
-          permutation::list(posint),
-          J2::'Matrix'(algebraic, square),
-          blockList, startIndex, endIndex, permutationList, J3;
+    local n :: posint,
+          Q :: 'Matrix'(algebraic, square),
+          Q2 :: 'Matrix'(algebraic, square),
+          eigVals :: list,
+          eig,
+          i :: posint,
+          permutation :: list(posint),
+          J2 :: 'Matrix'(algebraic, square),
+          blockList :: list('Matrix'(algebraic, square)), 
+          startIndex :: posint, 
+          endIndex :: posint, 
+          permutationList :: list('Matrix'(algebraic, square)), 
+          J3 :: 'Matrix'(algebraic, square);
 
     n := RowDimension(J);
 
@@ -561,16 +565,16 @@ end proc;
 # ----------------------------------------------------------------------- #
 sortJordanBlock := proc(J::Matrix(algebraic, square), $)::Matrix;
 
-    local blockStructure::list([anything, posint]),
-              blockSizes::list(posint), 
-                       i::posint, 
-                      c1::list(nonnegint), 
-                       P::list(posint), 
-                      r1::list(nonnegint), 
-         currentPosition::posint, 
-                      r2::list(nonnegint), 
-                      c2::list(nonnegint), 
-                       Q::'Matrix'(algebraic, square);
+    local blockStructure :: list([anything, posint]),
+          blockSizes :: list(posint), 
+          i :: posint, 
+          c1 :: list(nonnegint), 
+          P :: list(posint), 
+          r1 :: list(nonnegint), 
+          currentPosition :: posint, 
+          r2 :: list(nonnegint), 
+          c2 :: list(nonnegint), 
+          Q :: 'Matrix'(algebraic, square);
 
     if RowDimension(J) = 1 then
         return Matrix([1]);
@@ -624,13 +628,13 @@ end proc;
 # ----------------------------------------------------------------------- #
 JCF_to_WCF_Transformation_One_Eig := proc(J::Matrix(algebraic, square), $)
 
-    local n::posint,
-    jordanStructure::list,
-    A::'Matrix'(integer),
-    AL::list(integer),
-    count::posint, 
-    i::posint, 
-    j::posint;
+    local n :: posint,
+          jordanStructure :: list,
+          A :: 'Matrix'(integer),
+          AL :: list(integer),
+          count :: posint, 
+          i :: posint, 
+          j :: posint;
 
     n := RowDimension(J);
 
@@ -676,8 +680,8 @@ end proc;
 # ----------------------------------------------------------------------- #
 permutationMatrix := proc(P::list(posint), $)::Matrix(algebraic, square);
 
-    local A::'Matrix'(algebraic, square), 
-          i::posint;
+    local A :: 'Matrix'(algebraic, square), 
+          i :: posint;
 
     A := Matrix(nops(P));
     
