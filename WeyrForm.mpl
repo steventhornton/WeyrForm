@@ -28,8 +28,13 @@
 #   Q ... An invertible matrix such that W = Q^-1 A Q                     #
 #                                                                         #
 # REFERENCES                                                              #
-#   O'Meara, K. (2011). Advanced Topics in Linear Algebra: Weaving Matrix #
-#   Problems through the Weyr Form. Oxford University Press, USA.         #
+#   - O'Meara, K. (2011). Advanced Topics in Linear Algebra: Weaving      #
+#     Matrix Problems through the Weyr Form. Oxford University Press,     #
+#     USA.                                                                #
+#   - Helene Shapiro. The Weyr Characteristic. The American Mathematical  #
+#     Monthly, 106(10):919–929, 1999.                                     #
+#   - Eduard Weyr. Répartition des matrices en espèces et formation de    #
+#     toutes les espèces. CR Acad. Sci. Paris, 100:966–969, 1885.         #
 #                                                                         #
 # LICENSE                                                                 #
 #   This program is free software: you can redistribute it and/or modify  #
