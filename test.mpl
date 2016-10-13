@@ -5,7 +5,7 @@
 #                                                                         #
 # AUTHOR .... Steven E. Thornton                                          #
 # EMAIL ..... sthornt7@uwo.ca                                             #
-# UPDATED ... Oct. 8/2016                                                 #
+# UPDATED ... Oct. 13/2016                                                #
 #                                                                         #
 # Run test for the WeyrForm function and all sub-procedures.              #
 #                                                                         #
@@ -79,9 +79,9 @@ end proc:
 
 test102 := proc()
 
-    local A, WW, QQ, i;
+    local A, WW, QQ;
     
-    for i to 10 do
+    to 10 do
         A := RandomMatrix(3);
         
         WW, QQ := WeyrForm(A, 'output'=['W', 'Q']);
@@ -121,6 +121,82 @@ test103 := proc()
 end proc:
 
 
+test104 := proc()
+    
+    local J, WW, QQ, Z;
+    
+    J := Matrix([[5, 0, 0, 0, 0, 0, 0], 
+                 [0, 2, 1, 0, 0, 0, 0], 
+                 [0, 0, 2, 0, 0, 0, 0], 
+                 [0, 0, 0, 5, 1, 0, 0], 
+                 [0, 0, 0, 0, 5, 0, 0], 
+                 [0, 0, 0, 0, 0, 2, 0], 
+                 [0, 0, 0, 0, 0, 0, 5]]);
+    
+    WW, QQ := WeyrForm(J, 'output'=['W', 'Q']);
+    
+    Z :=  MatrixInverse(QQ).J.QQ - WW;
+    
+    Z := map(simplify, Z);
+    
+    if not Equal(Z, Matrix(7), 'compare'='all') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+end proc:
+
+
+test105 := proc()
+
+    local A, WW, QQ, Z;
+
+    A := Matrix([[2, 1, 0, 0, 0, 0, 0, 0],
+                 [0, 2, 1, 0, 0, 0, 0, 0],
+                 [0, 0, 2, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 2, 1, 0, 0, 0],
+                 [0, 0, 0, 0, 2, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 2, 1, 0],
+                 [0, 0, 0, 0, 0, 0, 2, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 2]]);
+
+    WW, QQ := WeyrForm(A, 'output'=['W', 'Q']);
+
+    Z :=  MatrixInverse(QQ).A.QQ - WW;
+
+    Z := map(simplify, Z);
+
+    if not Equal(Z, Matrix(8), 'compare'='all') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+end proc:
+
+
+test106 := proc()
+
+    local A, WW, QQ, Z;
+
+    A := Matrix([[0, -3, 1, 2],
+                 [-2, 1, -1, 2],
+                 [-2, 1, -1, 2],
+                 [-2, -3, 1, 4]]);
+
+    WW, QQ := WeyrForm(A, 'output'=['W', 'Q']);
+
+    Z :=  MatrixInverse(QQ).A.QQ - WW;
+
+    Z := map(simplify, Z);
+
+    if not Equal(Z, Matrix(4), 'compare'='all') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+end proc:
+
+
 # ----------------------------------------------------------------------- #
 # WeyrForm:-implementation_W                                              #
 # ----------------------------------------------------------------------- #
@@ -134,12 +210,179 @@ end proc:
 # ----------------------------------------------------------------------- #
 # WeyrForm:-getJordanStructure                                            #
 # ----------------------------------------------------------------------- #
-#test401 := proc()
+test401 := proc()
+    
+    local J, jStruct, jStructCorrect;
+    
+    J := Matrix(6); J[1,2] := 1;
+    
+    jStructCorrect := table([0=[2, 1, 1, 1, 1]]);
+    
+    jStruct := WeyrForm:-getJordanStructure(J);
+    
+    if not verify(jStructCorrect, jStruct, 'table') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+    
+end proc:
+
+
+test402 := proc()
+
+    local J, jStruct, jStructCorrect;
+
+    J := JordanBlockMatrix([[1,2], [2,2], [1,2], [1,1], [2,1]]);
+
+    jStructCorrect := table([1=[2, 2, 1], 2=[2, 1]]);
+
+    jStruct := WeyrForm:-getJordanStructure(J);
+
+    if not verify(jStructCorrect, jStruct, 'table') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test403 := proc()
+
+    local J, jStruct, jStructCorrect;
+
+    J := DiagonalMatrix([0, 1, 2, 3, 4]);
+
+    jStructCorrect := table([0=[1], 1=[1], 2=[1], 3=[1], 4=[1]]);
+
+    jStruct := WeyrForm:-getJordanStructure(J);
+
+    if not verify(jStructCorrect, jStruct, 'table') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test404 := proc()
+
+    local J, jStruct, jStructCorrect;
+
+    J := JordanBlockMatrix([[-1, 18]]);
+
+    jStructCorrect := table([-1=[18]]);
+
+    jStruct := WeyrForm:-getJordanStructure(J);
+
+    if not verify(jStructCorrect, jStruct, 'table') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
 
 # ----------------------------------------------------------------------- #
 # WeyrForm:-eigsAndBlockSizeFromJCF                                       #
 # ----------------------------------------------------------------------- #
-#test501 := proc()
+test501 := proc()
+    
+    local J, eigsAndSize, correct;
+    
+    correct := [[0, 2], [0, 1], [0, 1], [0, 1], [0, 1]];
+    
+    J := JordanBlockMatrix(correct);
+    
+    eigsAndSize := WeyrForm:-eigsAndBlockSizeFromJCF(J);
+    
+    if not evalb(correct = eigsAndSize) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+    
+end proc:
+
+
+test502 := proc()
+
+    local J, eigsAndSize, correct;
+
+    correct := [[1, 2], [2, 2], [1, 2], [1, 1], [2, 1]];
+
+    J := JordanBlockMatrix(correct);
+
+    eigsAndSize := WeyrForm:-eigsAndBlockSizeFromJCF(J);
+
+    if not evalb(correct = eigsAndSize) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test503 := proc()
+
+    local J, eigsAndSize, correct;
+
+    correct := [[-1, 1], [0, 1], [1, 1], [2, 1], [3, 1], [4, 1]];
+
+    J := JordanBlockMatrix(correct);
+
+    eigsAndSize := WeyrForm:-eigsAndBlockSizeFromJCF(J);
+
+    if not evalb(correct = eigsAndSize) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test504 := proc()
+
+    local J, eigsAndSize, correct;
+
+    correct := [[-1, 18]];
+
+    J := JordanBlockMatrix(correct);
+
+    eigsAndSize := WeyrForm:-eigsAndBlockSizeFromJCF(J);
+
+    if not evalb(correct = eigsAndSize) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test505 := proc()
+
+    local J, eigsAndSize, correct;
+
+    correct := [[-1, 1]];
+
+    J := JordanBlockMatrix(correct);
+
+    eigsAndSize := WeyrForm:-eigsAndBlockSizeFromJCF(J);
+
+    if not evalb(correct = eigsAndSize) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
 
 # ----------------------------------------------------------------------- #
 # WeyrForm:-jordanStructureToWeyrStructure                                #
@@ -290,7 +533,25 @@ test704 := proc()
     
     eigVal := 3;
     weyrStructure := [4, 4, 3, 3, 2, 2, 1];
-    W_correct := Matrix(19, 19, [[3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]]);
+    W_correct := Matrix([[3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0], 
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]]);
     
     W := WeyrForm:-weyrBlockMatrix(eigVal, weyrStructure);
     
@@ -324,10 +585,91 @@ test705 := proc()
     
 end proc:
 
+
 # ----------------------------------------------------------------------- #
 # WeyrForm:-sortJordanForm                                                #
 # ----------------------------------------------------------------------- #
-#test801 := proc()
+test801 := proc()
+    
+    local J, J_Correct, Q, Z;
+    
+    J := JordanBlockMatrix([[0, 1],[0, 3],[0, 2],[0, 1], [0, 1]]);
+    J_Correct := JordanBlockMatrix([[0, 3], [0, 2], [0, 1], [0, 1], [0, 1]]);
+    
+    Q := WeyrForm:-sortJordanForm(J);
+    
+    Z := MatrixInverse(Q).J.Q;
+    Z := map(simplify, Z);
+    
+    if not Equal(Z, J_Correct, 'compare'='entries') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+    
+end proc:
+
+
+test802 := proc()
+
+    local J, J_Correct, Q, Z;
+
+    J := JordanBlockMatrix([[1, 2], [2, 2], [1, 2], [1, 1], [2, 1]]);
+    J_Correct := JordanBlockMatrix([[1, 2], [1, 2], [1, 1], [2, 2], [2, 1]]);
+
+    Q := WeyrForm:-sortJordanForm(J);
+
+    Z := MatrixInverse(Q).J.Q;
+    Z := map(simplify, Z);
+
+    if not IsSimilar(Z, J_Correct) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test803 := proc()
+
+    local J, Q, Z;
+
+    J := JordanBlockMatrix([[-1, 1], [0, 1], [1, 1], [2, 1], [3, 1]]);
+
+    Q := WeyrForm:-sortJordanForm(J);
+
+    Z := MatrixInverse(Q).J.Q;
+    Z := map(simplify, Z);
+
+    if not IsSimilar(Z, J) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test804 := proc()
+
+    local J, Q, Z;
+
+    J := JordanBlockMatrix([[-1, 1]]);
+
+    Q := WeyrForm:-sortJordanForm(J);
+
+    Z := MatrixInverse(Q).J.Q;
+    Z := map(simplify, Z);
+
+    if not IsSimilar(Z, J) then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
 
 # ----------------------------------------------------------------------- #
 # WeyrForm:-sortJordanBlock                                               #
@@ -407,6 +749,48 @@ test102();
 printf("\tTest 103: ");
 test103();
 
+printf("\tTest 104: ");
+test104();
+
+printf("\tTest 105: ");
+test105();
+
+printf("\tTest 106: ");
+test106();
+
+
+printf("WeyrForm:-getJordanStructure\n");
+
+printf("\tTest 401: ");
+test401();
+
+printf("\tTest 402: ");
+test402();
+
+printf("\tTest 403: ");
+test403();
+
+printf("\tTest 404: ");
+test404();
+
+
+printf("WeyrForm:-eigsAndBlockSizeFromJCF  \n");
+
+printf("\tTest 501: ");
+test501();
+
+printf("\tTest 502: ");
+test502();
+
+printf("\tTest 503: ");
+test503();
+
+printf("\tTest 504: ");
+test504();
+
+printf("\tTest 505: ");
+test505();
+
 
 printf("WeyrForm:-jordanStructureToWeyrStructure\n");
 
@@ -439,6 +823,21 @@ test704();
 
 printf("\tTest 705: ");
 test705();
+
+
+printf("WeyrForm:-sortJordanForm\n");
+
+printf("\tTest 801: ");
+test801();
+
+printf("\tTest 802: ");
+test802();
+
+printf("\tTest 803: ");
+test803();
+
+printf("\tTest 804: ");
+test804();
 
 
 printf("WeyrForm:-permutationMatrix\n");
