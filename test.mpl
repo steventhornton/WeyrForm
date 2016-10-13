@@ -674,12 +674,93 @@ end proc:
 # ----------------------------------------------------------------------- #
 # WeyrForm:-sortJordanBlock                                               #
 # ----------------------------------------------------------------------- #
-#test901 := proc()
+test901 := proc()
+
+    local J, J_Correct, Q, Z;
+
+    J := JordanBlockMatrix([[0, 1],[0, 3],[0, 2],[0, 1], [0, 1]]);
+    J_Correct := JordanBlockMatrix([[0, 3], [0, 2], [0, 1], [0, 1], [0, 1]]);
+
+    Q := WeyrForm:-sortJordanForm(J);
+
+    Z := MatrixInverse(Q).J.Q;
+    Z := map(simplify, Z);
+
+    if not Equal(Z, J_Correct, 'compare'='entries') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
+
+test902 := proc()
+
+    local J, Q, Z;
+
+    J := JordanBlockMatrix([[0, 1]]);
+
+    Q := WeyrForm:-sortJordanForm(J);
+
+    Z := MatrixInverse(Q).J.Q;
+    Z := map(simplify, Z);
+
+    if not Equal(Z, J, 'compare'='entries') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
 
 # ----------------------------------------------------------------------- #
 # WeyrForm:-JCF_to_WCF_Transformation_One_Eig                             #
 # ----------------------------------------------------------------------- #
-#test1001 := proc()
+test1001 := proc()
+    
+    local J, W, Q, Z;
+    
+    J := Matrix([[10]]);
+    W := Matrix([[10]]);
+    
+    Q := WeyrForm:-JCF_to_WCF_Transformation_One_Eig(J);
+    
+    Z := Q.J.MatrixInverse(Q);
+    
+    Z := map(simplify, Z);
+    
+    if not Equal(Z, W, 'compare'='entries') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+    
+end proc:
+
+
+test1002 := proc()
+
+    local J, W, Q, Z;
+
+    J := JordanBlockMatrix([[0, 2], [0, 1], [0, 1], [0, 1], [0, 1]]);
+    W := Matrix(6); W[1,6] := 1;
+
+    Q := WeyrForm:-JCF_to_WCF_Transformation_One_Eig(J);
+
+    Z := Q.J.MatrixInverse(Q);
+
+    Z := map(simplify, Z);
+    
+    if not Equal(Z, W, 'compare'='entries') then
+        printf("\n");
+        error "Wrong result";
+    end if;
+    printf("Passed!\n");
+
+end proc:
+
 
 # ----------------------------------------------------------------------- #
 # WeyrForm:-permutationMatrix                                             #
@@ -838,6 +919,24 @@ test803();
 
 printf("\tTest 804: ");
 test804();
+
+
+printf("WeyrForm:-sortJordanBlock\n");
+
+printf("\tTest 901: ");
+test901();
+
+printf("\tTest 902: ");
+test902();
+
+
+printf("WeyrForm:-JCF_to_WCF_Transformation_One_Eig \n");
+
+printf("\tTest 1001: ");
+test1001();
+
+printf("\tTest 1002: ");
+test1002();
 
 
 printf("WeyrForm:-permutationMatrix\n");
