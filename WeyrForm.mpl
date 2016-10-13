@@ -27,6 +27,20 @@
 #   W ... The Weyr canonical form of the input matrix A                   #
 #   Q ... An invertible matrix such that W = Q^-1 A Q                     #
 #                                                                         #
+# EXAMPLE                                                                 #
+#   read("WeyrForm.mpl");                                                 #
+#   with(LinearAlgebra):                                                  #
+#                                                                         #
+#   A := Matrix([[-1,  0,  0,  2,  1,  0,  0],                            #
+#                [-1,  0,  0,  1,  1,  0,  0],                            #
+#                [ 6, -2, -2,  4,  2, -2,  4],                            #
+#                [-2,  1,  1,  0,  0,  1, -1],                            #
+#                [ 3, -1, -1,  2,  1, -1,  2],                            #
+#                [-5,  2,  2, -5, -3,  2, -4],                            #
+#                [ 2,  0,  0, -4, -2,  0,  0]]);                          #
+#                                                                         #
+#   Q, W := WeyrForm(A, output = [Q, W]);                                 #
+#                                                                         #
 # REFERENCES                                                              #
 #   - O'Meara, K. (2011). Advanced Topics in Linear Algebra: Weaving      #
 #     Matrix Problems through the Weyr Form. Oxford University Press,     #
