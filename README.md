@@ -9,6 +9,8 @@ The function `WeyrForm` expects a square matrix as input. It will return the Wey
 
 The `Example.mw` Maple worksheet includes 4 examples.
 
+A poster explaining how this implementation works can be found [here](https://s3.amazonaws.com/stevenethornton.github/WeyrForm.pdf).
+
 ## Example
 ```
 read("WeyrForm.mpl");
