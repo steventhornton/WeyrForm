@@ -5,7 +5,7 @@
 #                                                                         #
 # AUTHOR .... Steven E. Thornton                                          #
 # EMAIL ..... sthornt7@uwo.ca                                             #
-# UPDATED ... Oct. 11/2016                                                #
+# UPDATED ... Oct. 13/2016                                                #
 #                                                                         #
 # A function for computing the Weyr canonical form of a matrix            #
 #                                                                         #
@@ -239,7 +239,7 @@ implementation_WQ := proc(A::Matrix(algebraic, square), $)
     permutations := map(JCF_to_WCF_Transformation_One_Eig, blockList);
     
     Q1 := DiagonalMatrix(permutations);
-    Q1 := MatrixInverse(Q1);
+    Q1 := Transpose(Q1);
     
     QQ := QQ.Q1;
     
@@ -520,10 +520,9 @@ sortJordanForm := proc(J::Matrix(algebraic, square), $)
     end do;
 
     Q := permutationMatrix(permutation);
-    Q := MatrixInverse(Q);
 
     # 2. Order blocks in decreasing order
-    J2 := MatrixInverse(Q).J.Q;
+    J2 := Q.J.Transpose(Q);
 
     # Get the eigenvalues (in the same order they appear in J2)
     eigVals := MakeUnique(convert(Diagonal(J2), list));
@@ -616,8 +615,8 @@ sortJordanBlock := proc(J::Matrix(algebraic, square), $)::Matrix;
     for i to nops(blockSizes) do 
         Q[r1[i] .. r2[i], c1[i] .. c2[i]] := IdentityMatrix(blockSizes[i], 'compact' = false);
     end do;
-
-    Q := MatrixInverse(Q);
+    
+    Q := Transpose(Q);
 
     return Q;
 
