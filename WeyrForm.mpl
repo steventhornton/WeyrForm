@@ -323,6 +323,11 @@ eigsAndBlockSizeFromJCF := proc(J::Matrix(algebraic, square), $)::list([anything
           blockLocation :: list(truefalse),
           blockInter :: list,
           splitBlock :: list(list);
+    
+    # When J is a 1x1 matrix
+    if RowDimension(J) = 1 then
+        return [[J[1,1], 1]];
+    end if;
 
     # Get a list of the values on the first super diagonal
     superDiagonal:=convert(Diagonal(J,1),list); 
